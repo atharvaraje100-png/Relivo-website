@@ -342,8 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ['status', 'Consultation booked · Thu 2:15 PM · Dr. Alvarez'],
       ],
       weightloss: [
-        ['caller', 'Hi, I saw your semaglutide program online — how does the monthly program work?'],
-        ['ai', 'Happy to help. The medical weight loss program is billed monthly and includes your provider visits. Are you a current patient or just getting started?'],
+        ['caller', 'Hi, I saw your semaglutide program online, is it still $299 a month?'],
+        ['ai', 'That is right, $299 a month for the medical weight loss program, including your provider visits. Are you a current patient or just getting started?'],
         ['caller', 'Just starting. I do have a question about side effects though.'],
         ['ai', 'Totally understand. I am not able to give medical guidance over the phone, but I can get you a same-week consult with our provider so you get a real answer, not a guess.'],
         ['caller', 'That works.'],
