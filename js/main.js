@@ -364,11 +364,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const transcriptEl = document.getElementById('demo-transcript');
     const statusEl = document.getElementById('demo-status');
     const buttons = demoRoot.querySelectorAll('[data-scenario]');
-    let running = false;
+    let pendingStep = null;
 
     function renderScript(key){
-      if (running) return;
-      running = true;
+      clearTimeout(pendingStep);
       buttons.forEach(b => b.classList.remove('active'));
       demoRoot.querySelector(`[data-scenario="${key}"]`).classList.add('active');
       transcriptEl.textContent = '';
@@ -380,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const lines = scripts[key];
       let i = 0;
       function step(){
-        if (i >= lines.length){ running = false; return; }
+        if (i >= lines.length) return;
         const [who, text] = lines[i];
         if (who === 'status'){
           statusEl.textContent = '';
@@ -389,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pill.textContent = text;
           statusEl.appendChild(pill);
           i++;
-          setTimeout(step, 500);
+          pendingStep = setTimeout(step, 500);
           return;
         }
         const row = document.createElement('div');
@@ -405,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         transcriptEl.appendChild(row);
         transcriptEl.scrollTop = transcriptEl.scrollHeight;
         i++;
-        setTimeout(step, 1400);
+        pendingStep = setTimeout(step, 1400);
       }
       step();
     }
