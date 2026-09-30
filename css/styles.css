@@ -371,12 +371,5 @@ input[type="range"]::-moz-range-track{ background: var(--line); height:4px; bord
   *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
-/* ---------- Legal pages ---------- */
-.legal h2{ font-size: var(--step-2); margin: 44px 0 14px; }
-.legal h3{ font-size: 1.05rem; margin: 26px 0 8px; }
-.legal p, .legal li{ color: var(--ink-dim); line-height: 1.7; }
-.legal ul{ padding-left: 1.2em; margin: 0 0 16px; }
-.legal li{ margin-bottom: 8px; }
-.legal a, .contact-link{ color: var(--accent-hi); text-decoration: underline; text-underline-offset: 3px; }
-.legal a:hover, .contact-link:hover{ color: var(--ink); }
-.footer-legal a:hover{ color: var(--accent-hi); }
+.contact-link{ color: var(--accent-hi); text-decoration: underline; text-underline-offset: 3px; }
+.contact-link:hover{ color: var(--ink); }

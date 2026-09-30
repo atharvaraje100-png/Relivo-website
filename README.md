@@ -8,8 +8,7 @@ voice demo, lead capture).
 ## Structure
 
 ```
-index.html, pricing.html, ...   — the 10 top-level static pages
-                                  (incl. privacy.html, terms.html)
+index.html, pricing.html, ...   — the 8 top-level static pages
 industries/                     — 5 industry-specific landing pages
 css/styles.css                  — full design system (single file)
 js/main.js                      — all client-side interactivity
