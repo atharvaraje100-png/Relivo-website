@@ -37,7 +37,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.querySelector('.nav-toggle');
   const links = document.querySelector('.nav-links');
   if (toggle && links) {
-    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    const setMenuOpen = (open) => {
+      links.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+    toggle.addEventListener('click', () => {
+      const opening = !links.classList.contains('open');
+      setMenuOpen(opening);
+      // The menu panel sits before the toggle in DOM order, so move focus to
+      // its first link on open — Tab then walks the menu naturally.
+      if (opening) {
+        const first = links.querySelector('a');
+        if (first) first.focus();
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && links.classList.contains('open')) {
+        setMenuOpen(false);
+        toggle.focus();
+      }
+    });
   }
   document.querySelectorAll('.has-dropdown > a').forEach(a => {
     a.addEventListener('click', (e) => {
@@ -52,31 +72,36 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.faq-item').forEach(item => {
     const q = item.querySelector('.faq-q');
     if (!q) return;
+    q.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
     q.addEventListener('click', () => {
       const wasOpen = item.classList.contains('open');
-      item.parentElement.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!wasOpen) item.classList.add('open');
+      item.parentElement.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        const b = i.querySelector('.faq-q');
+        if (b) b.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        item.classList.add('open');
+        q.setAttribute('aria-expanded', 'true');
+      }
     });
   });
 
-  // ---------- Pricing toggle (monthly/annual) ----------
-  const priceToggle = document.querySelector('.pricing-toggle');
-  if (priceToggle) {
-    const btns = priceToggle.querySelectorAll('button');
-    const amounts = document.querySelectorAll('[data-monthly]');
-    btns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        btns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const mode = btn.dataset.mode;
-        amounts.forEach(el => {
-          el.textContent = mode === 'annual' ? el.dataset.annual : el.dataset.monthly;
-        });
-        document.querySelectorAll('.price-tax-note').forEach(el => {
-          el.style.display = mode === 'annual' ? 'inline' : 'none';
-        });
+  // ---------- One-time section reveals ----------
+  // Content is fully visible by default; the pre-reveal state is only applied
+  // when the observer exists and the visitor allows motion.
+  const revealEls = document.querySelectorAll('.reveal');
+  if (revealEls.length && !reduceMotion && 'IntersectionObserver' in window) {
+    revealEls.forEach(el => el.classList.add('reveal-init'));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-in');
+          io.unobserve(entry.target);
+        }
       });
-    });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
   }
 
   // ---------- ROI calculator ----------
@@ -339,11 +364,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const transcriptEl = document.getElementById('demo-transcript');
     const statusEl = document.getElementById('demo-status');
     const buttons = demoRoot.querySelectorAll('[data-scenario]');
-    let running = false;
+    let pendingStep = null;
 
     function renderScript(key){
-      if (running) return;
-      running = true;
+      clearTimeout(pendingStep);
       buttons.forEach(b => b.classList.remove('active'));
       demoRoot.querySelector(`[data-scenario="${key}"]`).classList.add('active');
       transcriptEl.textContent = '';
@@ -355,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const lines = scripts[key];
       let i = 0;
       function step(){
-        if (i >= lines.length){ running = false; return; }
+        if (i >= lines.length) return;
         const [who, text] = lines[i];
         if (who === 'status'){
           statusEl.textContent = '';
@@ -364,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pill.textContent = text;
           statusEl.appendChild(pill);
           i++;
-          setTimeout(step, 500);
+          pendingStep = setTimeout(step, 500);
           return;
         }
         const row = document.createElement('div');
@@ -380,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         transcriptEl.appendChild(row);
         transcriptEl.scrollTop = transcriptEl.scrollHeight;
         i++;
-        setTimeout(step, 1400);
+        pendingStep = setTimeout(step, 1400);
       }
       step();
     }

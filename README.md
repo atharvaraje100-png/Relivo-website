@@ -8,7 +8,7 @@ voice demo, lead capture).
 ## Structure
 
 ```
-index.html, pricing.html, ...   — the 12 static pages
+index.html, pricing.html, ...   — the 8 top-level static pages
 industries/                     — 5 industry-specific landing pages
 css/styles.css                  — full design system (single file)
 js/main.js                      — all client-side interactivity
@@ -19,8 +19,6 @@ api/web-call.js                 — real browser voice call (Retell)
 api/lead.js                     — Book a Demo lead capture (Resend email)
 lib/durableRateLimit.js         — shared Redis-backed rate limiter with
                                    automatic in-memory fallback
-RETELL_PROMPT_TEMPLATE.txt      — paste this into your Retell agent's
-                                   prompt for the personalized demo to work
 .env.example                    — every environment variable explained
 ```
 
@@ -43,9 +41,12 @@ RETELL_PROMPT_TEMPLATE.txt      — paste this into your Retell agent's
      the phone endpoint fails closed (503) in production if Redis is
      configured but unreachable — see `api/call.js` comments.
 5. Deploy. Every future `git push` to the connected branch auto-deploys.
-6. Paste `RETELL_PROMPT_TEMPLATE.txt` into your Retell agent's system
-   prompt — the personalized demo (business name/city/hours/services)
-   does nothing without this step.
+6. Configure your Retell demo agent's system prompt with the
+   business-context template — the personalized demo (business
+   name/city/hours/services) does nothing without this step. The prompt
+   template was removed from the deployed web root so it isn't publicly
+   downloadable; keep your working copy somewhere private (it is still
+   present in this repo's git history if you need to recover it).
 
 ## Pushing this repo to GitHub for the first time
 
